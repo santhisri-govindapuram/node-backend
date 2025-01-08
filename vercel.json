@@ -7,7 +7,7 @@
     { "src": "/.*", "dest": "app.js" },
     {
       "src": "/uploads/images/(.*)",
-      "dest": "public/uploads/images/$1"
+      "dest": "vite-node-app/public/uploads/images/$1"
     }
   ]
 }
