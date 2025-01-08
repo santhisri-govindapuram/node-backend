@@ -4,6 +4,10 @@
     { "src": "app.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/.*", "dest": "app.js" }
+    { "src": "/.*", "dest": "app.js" },
+    {
+      "src": "/uploads/images/(.*)",
+      "dest": "vite-node-app/public/uploads/images/$1"
+    }
   ]
 }
