@@ -20,6 +20,8 @@ const getUsers = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
+  console.log("Hello");
+  
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -28,6 +30,10 @@ const signup = async (req, res, next) => {
   }
 
   const { name, email, password } = req.body;
+
+  console.log("image", req.file.path);
+
+
 
   let existingUser;
   try {
@@ -59,6 +65,8 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
+  console.log("image", req.file.path);
+  
   const createdUser = new User({
     name,
     email,

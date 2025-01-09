@@ -40,11 +40,12 @@ app.use((req, res, next) => {
 
 // Serve static files from the "uploads/images" directory
 // app.use("/uploads/images", express.static(path.join("uploads", "images")));
+app.use("public/uploads/images", express.static(path.join("public","uploads", "images")));
 
-app.use('/public/uploads/images', express.static(path.join(__dirname, 'public/uploads/images')));
 
 
-console.log('Resolved path:', path.join(__dirname, 'public/uploads/images'));
+
+
 
 
 
@@ -53,6 +54,11 @@ console.log('Resolved path:', path.join(__dirname, 'public/uploads/images'));
 // Route handlers
 app.use("/api/users", usersRoutes);
 app.use("/api/places", placesRoutes);
+
+// app.use('/public/uploads/images', express.static(path.join(__dirname, 'public/uploads/images')));
+// app.use('/uploads/images', express.static(path.join(__dirname, 'uploads/images')));
+
+
 
 // Catch-all route for unknown endpoints
 app.use((req, res, next) => {
