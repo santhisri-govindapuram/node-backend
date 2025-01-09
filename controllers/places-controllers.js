@@ -1,5 +1,5 @@
 const fs = require('fs');
-
+const cloudinary = require('cloudinary').v2; // Example for Cloudinary integration
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
@@ -62,8 +62,18 @@ const getPlacesByUserId = async (req, res, next) => {
   });
 };
 
+
+
+// Configure Cloudinary (assuming you have set up Cloudinary environment variables)
+cloudinary.config({
+  cloud_name: "dkkvohlfa",
+  api_key: "337213324555484",
+  api_secret: "D8grGtcqVhgrDrc_VxrJjf-Lfbc",
+});
+
 const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return next(
       new HttpError('Invalid inputs passed, please check your data.', 422)
@@ -79,12 +89,46 @@ const createPlace = async (req, res, next) => {
     return next(error);
   }
 
+  // Check if file is uploaded
+  if (!req.file) {
+    console.error("No file uploaded");
+    const error = new HttpError('No image uploaded, please try again.', 400);
+    return next(error);
+  }
+
+  // Upload image to Cloudinary (using upload_stream for buffer)
+  let imageUrl;
+  try {
+    // Use a stream to upload the buffer data
+    const cloudinaryResponse = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: 'auto' }, // Auto-detect file type (e.g., image, video)
+        (error, result) => {
+          if (error) {
+            reject(new Error('Image upload failed'));
+          }
+          resolve(result);
+        }
+      );
+      // Pipe the file buffer to the Cloudinary stream
+      stream.end(req.file.buffer);
+    });
+
+    imageUrl = cloudinaryResponse.secure_url; // Cloudinary provides a URL after the upload
+    console.log("Image uploaded to Cloudinary:", imageUrl);
+  } catch (err) {
+    console.error("Error uploading image to Cloudinary:", err);
+    const error = new HttpError('Image upload failed, please try again later.', 500);
+    return next(error);
+  }
+
   const createdPlace = new Place({
     title,
     description,
     address,
     location: coordinates,
-    image: req.file.path,
+    // image: req.file.path,
+    image: imageUrl, // Store the image URL in your database
     creator: req.userData.userId
   });
 

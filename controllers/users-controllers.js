@@ -75,23 +75,7 @@ const signup = async (req, res, next) => {
   }
 
 
-   // Upload image to Cloudinary (or any other cloud storage service)
-   // Upload image to Cloudinary
-  // let imageUrl;
-  // try {
-  //   const cloudinaryResponse = await cloudinary.uploader.upload(req.file.buffer, {
-  //     resource_type: 'auto', // This auto-detects the file type (e.g., image, video)
-  //   });
-  //   imageUrl = cloudinaryResponse.secure_url; // Cloudinary provides a URL after the upload
-  // } catch (err) {
-  //   const error = new HttpError('Image upload failed, please try again later.', 500);
-  //   return next(error);
-  // }
-  // console.log("image", req.file.path);
-
-
-
-
+   
     // Check if file is uploaded
   if (!req.file) {
     console.error("No file uploaded");
