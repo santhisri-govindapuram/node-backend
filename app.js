@@ -67,18 +67,36 @@ app.use((req, res, next) => {
 });
 
 // Error handling middleware
+// app.use((error, req, res, next) => {
+//   if (req.file) {
+//     fs.unlink(req.file.path, (err) => {
+//       if (err) console.log("File deletion error:", err);
+//     });
+//   }
+//   if (res.headerSent) {
+//     return next(error);
+//   }
+//   res.status(error.code || 500);
+//   res.json({ message: error.message || "An unknown error occurred!" });
+// });
+
 app.use((error, req, res, next) => {
-  if (req.file) {
+  // Check if the file exists in the request and it has a valid path
+  if (req.file && req.file.path) {
     fs.unlink(req.file.path, (err) => {
-      if (err) console.log("File deletion error:", err);
+      if (err) {
+        console.log("File deletion error:", err);
+      }
     });
   }
+
   if (res.headerSent) {
     return next(error);
   }
   res.status(error.code || 500);
   res.json({ message: error.message || "An unknown error occurred!" });
 });
+
 
 // Connect to MongoDB and start the server
 

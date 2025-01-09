@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cloudinary = require('cloudinary').v2; // Example for Cloudinary integration
 
 const HttpError = require('../models/http-error');
 const User = require('../models/user');
@@ -19,6 +20,14 @@ const getUsers = async (req, res, next) => {
   res.json({ users: users.map(user => user.toObject({ getters: true })) });
 };
 
+
+// Configure Cloudinary (assuming you have set up Cloudinary environment variables)
+cloudinary.config({
+  cloud_name: "dkkvohlfa",
+  api_key: "337213324555484",
+  api_secret: "D8grGtcqVhgrDrc_VxrJjf-Lfbc",
+});
+
 const signup = async (req, res, next) => {
   console.log("Hello");
   
@@ -31,7 +40,7 @@ const signup = async (req, res, next) => {
 
   const { name, email, password } = req.body;
 
-  console.log("image", req.file.path);
+ 
 
 
 
@@ -65,12 +74,62 @@ const signup = async (req, res, next) => {
     return next(error);
   }
 
-  console.log("image", req.file.path);
+
+   // Upload image to Cloudinary (or any other cloud storage service)
+   // Upload image to Cloudinary
+  // let imageUrl;
+  // try {
+  //   const cloudinaryResponse = await cloudinary.uploader.upload(req.file.buffer, {
+  //     resource_type: 'auto', // This auto-detects the file type (e.g., image, video)
+  //   });
+  //   imageUrl = cloudinaryResponse.secure_url; // Cloudinary provides a URL after the upload
+  // } catch (err) {
+  //   const error = new HttpError('Image upload failed, please try again later.', 500);
+  //   return next(error);
+  // }
+  // console.log("image", req.file.path);
+
+
+
+
+    // Check if file is uploaded
+  if (!req.file) {
+    console.error("No file uploaded");
+    const error = new HttpError('No image uploaded, please try again.', 400);
+    return next(error);
+  }
+
+  // Upload image to Cloudinary (using upload_stream for buffer)
+  let imageUrl;
+  try {
+    // Use a stream to upload the buffer data
+    const cloudinaryResponse = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: 'auto' }, // Auto-detect file type (e.g., image, video)
+        (error, result) => {
+          if (error) {
+            reject(new Error('Image upload failed'));
+          }
+          resolve(result);
+        }
+      );
+      // Pipe the file buffer to the Cloudinary stream
+      stream.end(req.file.buffer);
+    });
+
+    imageUrl = cloudinaryResponse.secure_url; // Cloudinary provides a URL after the upload
+    console.log("Image uploaded to Cloudinary:", imageUrl);
+  } catch (err) {
+    console.error("Error uploading image to Cloudinary:", err);
+    const error = new HttpError('Image upload failed, please try again later.', 500);
+    return next(error);
+  }
   
   const createdUser = new User({
     name,
     email,
-    image: req.file.path,
+    // image: req.file.path,
+    image: imageUrl, // Store the image URL in your database
     password: hashedPassword,
     places: []
   });
