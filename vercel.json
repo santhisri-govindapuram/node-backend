@@ -6,8 +6,8 @@
   "routes": [
     { "src": "/.*", "dest": "app.js" },
     {
-      "src": "/uploads/images/(.*)",
-      "dest": "vite-node-app/public/uploads/images/$1"
+      "src": "/public/uploads/images/(.*)",
+      "dest": "/public/uploads/images/$1"
     }
   ]
 }
