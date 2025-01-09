@@ -41,7 +41,11 @@ app.use((req, res, next) => {
 // Serve static files from the "uploads/images" directory
 // app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
-app.use('public/uploads/images', express.static(path.join(__dirname, 'public/uploads/images')));
+app.use('/public/uploads/images', express.static(path.join(__dirname, 'public/uploads/images')));
+
+
+console.log('Resolved path:', path.join(__dirname, 'public/uploads/images'));
+
 
 
 
