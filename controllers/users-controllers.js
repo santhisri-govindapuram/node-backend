@@ -67,6 +67,8 @@ const signup = async (req, res, next) => {
     places: []
   });
 
+console.log(createdUser,"createdUser");
+
   try {
     await createdUser.save();
   } catch (err) {
